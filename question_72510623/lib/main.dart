@@ -25,8 +25,8 @@ class QuizScreen extends StatefulWidget {
 }
 
 class _QuizScreenState extends State<QuizScreen> {
-  final PageController controller = PageController(initialPage: 0);
-  bool showNext = true;
+  final PageController controller = PageController();
+  int currentPage = 0;
   List<String> questions = [
     'Which is the fastest animal?',
     'Which is the slowest animal?',
@@ -46,33 +46,30 @@ class _QuizScreenState extends State<QuizScreen> {
                   itemCount: questions.length + 1,
                   itemBuilder: (context, index) {
                     if (index == questions.length) {
-                      return const QuizResult();
+                      return QuizResult(onPressed: onPressed);
                     }
 
                     return QuizQuestion(question: questions[index]);
                   },
                 ),
               ),
-              Visibility(
-                visible: showNext,
-                child: TextButton(
-                  onPressed: () async {
-                    await controller.nextPage(
-                      duration: const Duration(milliseconds: 500),
-                      curve: Curves.ease,
-                    );
+              TextButton(
+                onPressed: () {
+                  if (currentPage == questions.length) return;
 
-                    if (controller.page == questions.length) {
-                      setState(() => showNext = false);
-                    }
-                  },
-                  child: const Text('Next'),
-                ),
+                  controller.jumpToPage(++currentPage);
+                },
+                child: const Text('Next'),
               )
             ],
           ),
         ),
       );
+
+  void onPressed() {
+    controller.jumpToPage(0);
+    currentPage = 0;
+  }
 }
 
 class QuizQuestion extends StatelessWidget {
@@ -87,13 +84,15 @@ class QuizQuestion extends StatelessWidget {
 }
 
 class QuizResult extends StatelessWidget {
-  const QuizResult({Key? key}) : super(key: key);
+  const QuizResult({Key? key, required this.onPressed}) : super(key: key);
+
+  final void Function() onPressed;
 
   @override
   Widget build(BuildContext context) => Scaffold(
         body: Center(
           child: TextButton(
-            onPressed: () {},
+            onPressed: onPressed,
             child: const Text('Play Again'),
           ),
         ),
