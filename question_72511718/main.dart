@@ -13,28 +13,70 @@ void main() {
   //   }
   // }
 
-  articleList.forEach(
-    (article) => customerFavList.forEach(
-      (customerFav) {
-        if (article.id == customerFav.articleId) {
-          final fav = NewCustomerFav(customerFav.id, article, customerFav.like);
-          customFavartList.add(fav);
-        }
-      },
-    ),
-  );
+  // articleList.forEach(
+  //   (article) => customerFavList.forEach(
+  //     (customerFav) {
+  //       if (article.id == customerFav.articleId) {
+  //         final fav = NewCustomerFav(customerFav.id, article, customerFav.like);
+  //         customFavartList.add(fav);
+  //       }
+  //     },
+  //   ),
+  // );
 
-  articleList.forEach(
-    (article) => customerFavList
-        .where(
-      (customerFav) => article.id == customerFav.articleId,
-    )
-        .forEach((newCustomerFav) {
-      final fav =
-          NewCustomerFav(newCustomerFav.id, article, newCustomerFav.like);
-      customFavartList.add(fav);
-    }),
-  );
+  // articleList.forEach(
+  //   (article) => customerFavList
+  //       .where(
+  //     (customerFav) => article.id == customerFav.articleId,
+  //   )
+  //       .forEach((newCustomerFav) {
+  //     final fav =
+  //         NewCustomerFav(newCustomerFav.id, article, newCustomerFav.like);
+  //     customFavartList.add(fav);
+  //   }),
+  // );
+
+  // articleList.forEach(
+  //   (article) {
+  //     final result = customerFavList
+  //         .where((customerFav) => article.id == customerFav.articleId)
+  //         .toList();
+
+  //     customFavartList
+  //         .addAll(result.map((e) => NewCustomerFav(e.id, article, e.like)));
+  //   },
+  // );
+
+  final newCustomerFavListList = articleList.map(
+    (article) {
+      final result = customerFavList.where(
+        (customerFav) {
+          if (customerFav.articleId == article.id) return true;
+
+          return false;
+        },
+      ).toList();
+
+      return result
+          .map((item) => NewCustomerFav(item.id, article, item.like))
+          .toList();
+    },
+  ).toList();
+
+  articleList.map(
+    (article) {
+      final result = customerFavList.where(
+        (customerFav) {
+          if (customerFav.articleId == article.id) return true;
+
+          return false;
+        },
+      ).toList();
+
+      customFavartList.addAll(
+          result.map((item) => NewCustomerFav(item.id, article, item.like)));
+    },
+  ).toList();
 
   for (final customFavitem in customFavartList) {
     print('${customFavitem.article.name} ${customFavitem.like}');
